@@ -62,19 +62,23 @@ async function autoScroll(page) {
     await page.waitForSelector('.app-aware-link', { timeout: 60000 });
     await autoScroll(page);
   
-    // Scrape profile URLs and names from the current page
+    // Scrape profile URLs, names, bios, and locations from the current page
     const profiles = await page.evaluate(() => {
       const profilesData = [];
-      const resultElements = document.querySelectorAll('.app-aware-link');
+      const resultElements = document.querySelectorAll('.AVvkMmLYlGVJqvYtIJLOZQcCAQmRvUerU');
   
-      // Iterate over the result elements to extract URLs and names
       resultElements.forEach(element => {
-        const url = element.href;
+        const profileElement = element.querySelector('a');
+        const url = profileElement.href;
         if (url.startsWith('https://www.linkedin.com/in/')) {
-            const nameElement = element.querySelector('span[dir="ltr"] > span[aria-hidden="true"]');
-            if (nameElement) {
+          const nameElement = element.querySelector('span[dir="ltr"] > span[aria-hidden="true"]');
+          const bioElement = element.querySelector('.entity-result__primary-subtitle');
+          const locationElement = element.querySelector('.entity-result__secondary-subtitle');
+          if (nameElement) {
             const name = nameElement.innerText.trim();
-            profilesData.push({ url, name }); // Push the URL and name into the profilesData array
+            const bio = bioElement?.textContent.trim(); 
+            const location = locationElement?.textContent.trim();
+            profilesData.push({ url, name, bio, location }); 
           }
         }
       });
