@@ -27,9 +27,9 @@ async function autoScroll(page) {
 
   // Login
   await page.waitForSelector('#session_key', { timeout: 60000 }); // Increased timeout
-  await page.type('#session_key', 'Jeanpaul_mansour@outlook.com');
+  await page.type('#session_key', 'linkedinscrape2024@gmail.com');
   await page.waitForSelector('#session_password', { timeout: 60000 }); // Increased timeout
-  await page.type('#session_password', 'Jcmansour#2001');
+  await page.type('#session_password', 'John#doe@123');
   await page.waitForSelector('.sign-in-form__submit-btn--full-width', { timeout: 60000 }); // Increased timeout
   await page.click('.sign-in-form__submit-btn--full-width');
   await page.waitForNavigation();
@@ -58,7 +58,7 @@ async function autoScroll(page) {
   const allProfileURLs = [];
 
   // Loop through multiple pages
-  for (let currentPage = 1; currentPage <= 3; currentPage++) { // Modify the end page number as needed
+  for (let currentPage = 1; currentPage <= 10; currentPage++) { // Modify the end page number as needed
     await page.waitForSelector('.app-aware-link', { timeout: 60000 });
 
     // Scroll to load more profiles
@@ -66,7 +66,7 @@ async function autoScroll(page) {
 
     // Scrape profile URLs from the current page
     const profileURLs = await page.evaluate(() => {
-      const urls = [];
+      const urls = []
       const resultElements = document.querySelectorAll('.app-aware-link');
       for (const element of resultElements) {
         const url = element.href;
@@ -80,7 +80,7 @@ async function autoScroll(page) {
     allProfileURLs.push(...profileURLs);
 
     // Go to the next page if not the last one
-    if (currentPage < 3) { // Modify the end page number as needed
+    if (currentPage < 10) { // Modify the end page number as needed
       await Promise.all([
         page.waitForNavigation(),
         page.click('.artdeco-pagination__button--next')
