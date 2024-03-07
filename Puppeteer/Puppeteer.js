@@ -27,9 +27,9 @@ async function autoScroll(page) {
 
   // Login
   await page.waitForSelector('#session_key', { timeout: 60000 }); // Increased timeout
-  await page.type('#session_key', 'linkedinscrape2024@gmail.com');
+  await page.type('#session_key', 'jeanpaul_mansour@outlook.com');
   await page.waitForSelector('#session_password', { timeout: 60000 }); // Increased timeout
-  await page.type('#session_password', 'John#doe@123');
+  await page.type('#session_password', 'Jcmansour#2001');
   await page.waitForSelector('.sign-in-form__submit-btn--full-width', { timeout: 60000 }); // Increased timeout
   await page.click('.sign-in-form__submit-btn--full-width');
   await page.waitForNavigation();
@@ -55,44 +55,49 @@ async function autoScroll(page) {
   // Wait for the navigation to complete
   await page.waitForNavigation({ timeout: 60000 });
 
-  const allProfileURLs = [];
+  const allProfiles = []; // Define an array to store profile objects
 
   // Loop through multiple pages
-  for (let currentPage = 1; currentPage <= 10; currentPage++) { // Modify the end page number as needed
+  for (let currentPage = 1; currentPage <= 10; currentPage++) {
     await page.waitForSelector('.app-aware-link', { timeout: 60000 });
-
-    // Scroll to load more profiles
     await autoScroll(page);
-
-    // Scrape profile URLs from the current page
-    const profileURLs = await page.evaluate(() => {
-      const urls = []
+  
+    // Scrape profile URLs and names from the current page
+    const profiles = await page.evaluate(() => {
+      const profilesData = [];
       const resultElements = document.querySelectorAll('.app-aware-link');
-      for (const element of resultElements) {
+  
+      // Iterate over the result elements to extract URLs and names
+      resultElements.forEach(element => {
         const url = element.href;
-        if (url.startsWith('https://www.linkedin.com/in/') && !urls.includes(url)) {
-          urls.push(url);
+        if (url.startsWith('https://www.linkedin.com/in/')) {
+            const nameElement = element.querySelector('span[dir="ltr"] > span[aria-hidden="true"]');
+            if (nameElement) {
+            const name = nameElement.innerText.trim();
+            profilesData.push({ url, name }); // Push the URL and name into the profilesData array
+          }
         }
-      }
-      return urls;
+      });
+  
+      return profilesData;
     });
-
-    allProfileURLs.push(...profileURLs);
-
+  
+    allProfiles.push(...profiles);
+  
     // Go to the next page if not the last one
-    if (currentPage < 10) { // Modify the end page number as needed
+    if (currentPage < 10) {
       await Promise.all([
         page.waitForNavigation(),
         page.click('.artdeco-pagination__button--next')
       ]);
     }
   }
-
+  
   // Store the unique profile URLs in a JSON file
-  const uniqueProfileURLs = Array.from(new Set(allProfileURLs)); // Remove duplicates
-  fs.writeFileSync('profile_urls.json', JSON.stringify(uniqueProfileURLs, null, 2));
-
-  console.log('Unique profile URLs stored in profile_urls.json');
+  fs.writeFileSync('profiles.json', JSON.stringify(allProfiles, null, 2));
+  
+  console.log('Profile data stored in profiles.json');
+  
 
   // Close the browser
   await browser.close();
