@@ -20,7 +20,7 @@ async function autoScroll(page) {
   });
 }
 
-(async () => {
+async function scrape(pages) {
   const browser = await puppeteer.launch({ headless: false });
   const page = await browser.newPage();
   await page.goto('https://www.linkedin.com', { timeout: 90000 });
@@ -58,7 +58,7 @@ async function autoScroll(page) {
   const allProfiles = []; // Define an array to store profile objects
 
   // Loop through multiple pages
-  for (let currentPage = 1; currentPage <= 10; currentPage++) {
+  for (let currentPage = 2; currentPage <= pages; currentPage++) {
     await page.waitForSelector('.app-aware-link', { timeout: 60000 });
     await autoScroll(page);
   
@@ -89,7 +89,7 @@ async function autoScroll(page) {
     allProfiles.push(...profiles);
   
     // Go to the next page if not the last one
-    if (currentPage < 10) {
+    if (currentPage < pages) {
       await Promise.all([
         page.waitForNavigation(),
         page.click('.artdeco-pagination__button--next')
@@ -97,12 +97,13 @@ async function autoScroll(page) {
     }
   }
   
-  // Store the unique profile URLs in a JSON file
   fs.writeFileSync('profiles.json', JSON.stringify(allProfiles, null, 2));
   
   console.log('Profile data stored in profiles.json');
   
 
-  // Close the browser
+
   await browser.close();
-})();
+}
+
+scrape(10);
