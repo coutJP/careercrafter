@@ -65,7 +65,7 @@ async function scrape(pages) {
     // Scrape profile URLs, names, bios, and locations from the current page
     const profiles = await page.evaluate(() => {
       const profilesData = [];
-      const resultElements = document.querySelectorAll('.AVvkMmLYlGVJqvYtIJLOZQcCAQmRvUerU');
+      const resultElements = document.querySelectorAll('.iENLbCgzGsCfncEwUJeBGEGuXWXbDqRzmCMc');
   
       resultElements.forEach(element => {
         const profileElement = element.querySelector('a');
@@ -97,7 +97,7 @@ async function scrape(pages) {
     }
   }
   
-  fs.writeFileSync('profiles.json', JSON.stringify(allProfiles, null, 2));
+  fs.writeFileSync('profiles112.json', JSON.stringify(allProfiles, null, 2));
   
   console.log('Profile data stored in profiles.json');
   
