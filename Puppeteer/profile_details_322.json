@@ -58,7 +58,18 @@
     "name": "Joseph Hobeika",
     "bio": "Economist student at Saint Joseph University of Beirut",
     "location": "Beirut",
-    "Education": []
+    "Education": [
+      {
+        "instituteName": "Saint Joseph University of Beirut",
+        "major": "Bachelor of economics",
+        "dates": "Sep 2021 - Jun 2024"
+      },
+      {
+        "instituteName": "SSCC kfardebiane",
+        "major": "Baccalaureate, General sciences",
+        "dates": "Sep 2006 - Jun 2021"
+      }
+    ]
   },
   {
     "profileUrl": "https://www.linkedin.com/in/marounayli?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAACc25LQBQzP2HbSxBqQamAMEvZzq3AFlSQI",
