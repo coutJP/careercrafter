@@ -23,7 +23,7 @@ async function autoScroll(page) {
 
 
 
-async function scrapeProfiles(browser, page, profilesData) {
+async function scrapeEducation(browser, page, profilesData) {
   const allProfileDetails = [];
 
   try {
@@ -31,19 +31,33 @@ async function scrapeProfiles(browser, page, profilesData) {
       const profileUrl = profile.url.split('?')[0];
       const educationUrl = profileUrl + '/details/education/';
       await page.goto(educationUrl, { timeout: 90000 });
-      console.log('educationurl',educationUrl)
+      console.log('educationurl', educationUrl)
 
       await new Promise(resolve => setTimeout(resolve, 2000));
 
       const profileDetails = await page.evaluate(() => {
-        const educationItems = Array.from(document.querySelectorAll('.pvs-list__paged-list-item'));
-        const universities = educationItems.map(item => item.textContent.trim());
-        return universities;
+        const educationItems = Array.from(document.querySelectorAll('li.pvs-list__paged-list-item'));
+        const educationData = educationItems.map(item => {
+          const instituteNameElement = item.querySelector('span[aria-hidden="true"]');
+          const majorElement = item.querySelector('.t-14.t-normal > span[aria-hidden="true"]');
+          const datesElement = item.querySelector('span.t-14.t-normal > .pvs-entity__caption-wrapper');
+
+          const instituteName = instituteNameElement ? instituteNameElement.textContent.trim() : '';
+          const major = majorElement ? majorElement.textContent.trim() : ''; // Check if majorElement exists
+          const dates = datesElement ? datesElement.textContent.trim() : '';
+
+          return { instituteName, major, dates };
+        }).filter(entry => entry.instituteName && entry.dates); // Filter out entries where instituteName or dates is empty
+
+        return educationData;
       });
 
       allProfileDetails.push({
         profileUrl: profile.url,
-        universities: profileDetails
+        name: profile.name,
+        bio: profile.bio,
+        location: profile.location,
+        Education: profileDetails
       });
 
     }
@@ -51,9 +65,11 @@ async function scrapeProfiles(browser, page, profilesData) {
     console.error('Error scraping profiles:', error);
   }
 
-  fs.writeFileSync('profile_details.json', JSON.stringify(allProfileDetails, null, 2));
+  fs.writeFileSync('profile_details_322.json', JSON.stringify(allProfileDetails, null, 2));
   console.log('Profile details stored in profile_details.json');
 }
+
+
 
 
 
@@ -63,9 +79,9 @@ async function scrape(pages) {
   await page.goto('https://www.linkedin.com', { timeout: 90000 });
 
   await page.waitForSelector('#session_key', { timeout: 60000 });
-  await page.type('#session_key', 'linkedinscrape2024@gmail.com');
+  await page.type('#session_key', 'jeanpaul_mansour@outlook.com');
   await page.waitForSelector('#session_password', { timeout: 60000 });
-  await page.type('#session_password', 'John#doe@123');
+  await page.type('#session_password', 'Jcmansour#2001');
   await page.waitForSelector('.sign-in-form__submit-btn--full-width', { timeout: 60000 });
   await page.click('.sign-in-form__submit-btn--full-width');
   await page.waitForNavigation();
@@ -78,7 +94,7 @@ async function scrape(pages) {
 
   await page.waitForSelector('.search-global-typeahead__input', { timeout: 9000 });
 
-  await page.type('.search-global-typeahead__input', 'Saint Joseph University of Beirut esib');
+  await page.type('.search-global-typeahead__input', 'Saint Joseph University of Beirut');
 
   await page.keyboard.press('Enter');
 
@@ -123,11 +139,11 @@ async function scrape(pages) {
     }
   }
 
-  fs.writeFileSync('profiles321.json', JSON.stringify(allProfiles, null, 2));
+  fs.writeFileSync('profiles_322.json', JSON.stringify(allProfiles, null, 2));
   console.log('Profile data stored in profiles.json');
 
-  await scrapeProfiles(browser, page, allProfiles);
+  await scrapeEducation(browser, page, allProfiles);
   await browser.close();
 }
 
-scrape(5);
+scrape(10);
